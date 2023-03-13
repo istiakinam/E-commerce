@@ -6,7 +6,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const port = 3000;
 
-app.get('/', (req, res) => {
+app.get('/', (req, res) /*middleware function*/ => {
     res.send(`
         <div>
             <form method='POST'>
@@ -20,8 +20,8 @@ app.get('/', (req, res) => {
 })
 
 app.post('/', (req, res) => {
-    console.log(req.body);
-    res.send("Account Created");
+    console.log(req.body.password);
+    res.send(`Account Created`);
 })
 
 app.listen(port, () => {
