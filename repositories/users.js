@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { get } = require('http');
 
 class UsersRepository {
     constructor(filename) {
@@ -15,23 +16,32 @@ class UsersRepository {
     }
 
     async getAll() {
-        // Open the file called this.filename
-        const contents = await fs.promises.readFile(this.filename, { encoding: 'utf-8' })
+        // return the contents of the file after JSON parsing
+        return JSON.parse(
+            await fs.promises.readFile(this.filename, { 
+                encoding: 'utf-8' 
+            })
+        )
+    }
 
+    async create(attributes) {
+        const records = await this.getAll()
+        
+        //adding the new user
+        records.push(attributes)
 
-        // Read its contents
-        console.log(contents);
-
-        //parse the contents
-
-        //return the parsed data
+        //write the updated 'records' array back to the this.filename
+        await fs.promises.writeFile(this.filename, JSON.stringify(records))
     }
 }
 
 const test = async () => {
     const repo = new UsersRepository('users.json');
-    await repo.getAll();
+    
+    await repo.create( { email: 'istiak@gmail.com', password: 'abla' })
 
+    const users = await repo.getAll();
+    console.log(users);
 }
 
 test();
