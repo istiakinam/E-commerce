@@ -1,6 +1,6 @@
-const fs = require('fs');
-const { get } = require('http');
-const crypto = require('crypto')
+import fs from 'fs';
+import { get } from 'http';
+import crypto from 'crypto'
 
 class UsersRepository {
     constructor(filename) {
@@ -75,11 +75,11 @@ class UsersRepository {
     async getOneBy(filters) {
         const records = await this.getAll();
 
-        for(let record of records) {
+        for (let record of records) {
             let found = true;
 
             for(let key in filters) {
-                if(record[key] !== filters[key]) {
+                if (record[key] !== filters[key]) {
                     found = false; 
                 }
             }
@@ -90,13 +90,14 @@ class UsersRepository {
     }
 }
 
-const test = async () => {
-    const repo = new UsersRepository('users.json');
-    
-    //await repo.create({ email: 'update@gmail.com' });
-    const user = await repo.getOneBy({ email: 'aqsa@gmsdfail.com' });
+// const test = async () => {
+//     const repo = new UsersRepository('users.json')
 
-    console.log(user);
-}
+//     const user = await repo.getOneBy({ id: 'iainam' })
 
-test();
+//     console.log(user)
+// }
+
+// test();
+
+export default new UsersRepository('users.json');
