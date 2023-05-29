@@ -25,15 +25,16 @@ class UsersRepository {
         )
     }
 
-    async create(attr) {
-        attr.id = this.randomId();
+    async create(attrs) {
+        attrs.id = this.randomId();
 
         const records = await this.getAll()
         
         //adding the new user
-        records.push(attr)
+        records.push(attrs)
 
         await this.writeAll(records)
+        return attrs; 
     }
 
     async writeAll(records) {
