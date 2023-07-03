@@ -1,5 +1,6 @@
 import usersRepo from '../../repositories/users.js';
 import express from 'express'
+import { check, validationResult } from 'express-validator'
 import signupTemplate from '../../views/admin/auth/signup.js'
 import signinTemplate from '../../views/admin/auth/signin.js'
 
@@ -9,24 +10,33 @@ router.get('/signup', (req, res) /*middleware function*/ => {
     res.send(signupTemplate({ req }));
 })
 
-router.post('/signup', async (req, res) => {
-    const { email, password, passwordConfirmation } = req.body;
-    
-    const existingUser = await usersRepo.getOneBy({ email })
-    if(existingUser) {
-        return res.send('User already exists.')
-    }
-    if(password !== passwordConfirmation) {
-        return res.send("Passwords do not match!")
-    }
+router.post('/signup', 
+    [
+        check('email').trim().normalizeEmail().isEmail(),
+        check('password').trim().isLength({ min: 4, max: 20 }),
+        check('passwordConfirmation').trim().isLength({ min: 4, max: 20 })
+    ],
+    async (req, res) => {
+        const errors = validationResult(req); //all the validation results from above is attached to the req object
+        console.log(errors);
 
-    //create user inside user repo
-    const user = await usersRepo.create({ email, password });
+        const { email, password, passwordConfirmation } = req.body;
+        
+        const existingUser = await usersRepo.getOneBy({ email })
+        if(existingUser) {
+            return res.send('User already exists.')
+        }
+        if(password !== passwordConfirmation) {
+            return res.send("Passwords do not match!")
+        }
 
-    //store the id of that user inside the users cookie
-    req.session.userId = user.id    //added by cookieSession    
+        //create user inside user repo
+        const user = await usersRepo.create({ email, password });
 
-    res.send(`Account Created!`);
+        //store the id of that user inside the users cookie
+        req.session.userId = user.id    //added by cookieSession    
+
+        res.send(`Account Created!`);
 })
 
 router.get('/signout', (req, res) => {
