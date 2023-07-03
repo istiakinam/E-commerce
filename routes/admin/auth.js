@@ -12,23 +12,26 @@ router.get('/signup', (req, res) /*middleware function*/ => {
 
 router.post('/signup', 
     [
-        check('email').trim().normalizeEmail().isEmail(),
+        check('email').trim().normalizeEmail().isEmail()
+            .custom(async (email) => {
+                const existingUser = await usersRepo.getOneBy({ email })
+                if(existingUser) {
+                    throw new Error('Email in use')
+                }
+            }),
         check('password').trim().isLength({ min: 4, max: 20 }),
         check('passwordConfirmation').trim().isLength({ min: 4, max: 20 })
+            .custom((passwordConfirmation, { req }) => {
+                if(passwordConfirmation !== req.body.password) {
+                    throw new Error('Passwords do not match')
+                }
+            })
     ],
     async (req, res) => {
         const errors = validationResult(req); //all the validation results from above is attached to the req object
         console.log(errors);
 
         const { email, password, passwordConfirmation } = req.body;
-        
-        const existingUser = await usersRepo.getOneBy({ email })
-        if(existingUser) {
-            return res.send('User already exists.')
-        }
-        if(password !== passwordConfirmation) {
-            return res.send("Passwords do not match!")
-        }
 
         //create user inside user repo
         const user = await usersRepo.create({ email, password });
