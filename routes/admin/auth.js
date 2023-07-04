@@ -3,6 +3,7 @@ import express from 'express'
 import { check, validationResult } from 'express-validator'
 import signupTemplate from '../../views/admin/auth/signup.js'
 import signinTemplate from '../../views/admin/auth/signin.js'
+import { requireEmail, requirePassword, requirePasswordConfirmation } from './validators.js'
 
 const router = express.Router();
 
@@ -12,20 +13,9 @@ router.get('/signup', (req, res) /*middleware function*/ => {
 
 router.post('/signup', 
     [
-        check('email').trim().normalizeEmail().isEmail()
-            .custom(async (email) => {
-                const existingUser = await usersRepo.getOneBy({ email })
-                if(existingUser) {
-                    throw new Error('Email in use')
-                }
-            }),
-        check('password').trim().isLength({ min: 4, max: 20 }),
-        check('passwordConfirmation').trim().isLength({ min: 4, max: 20 })
-            .custom((passwordConfirmation, { req }) => {
-                if(passwordConfirmation !== req.body.password) {
-                    throw new Error('Passwords do not match')
-                }
-            })
+        requireEmail,
+        requirePassword,
+        requirePasswordConfirmation
     ],
     async (req, res) => {
         const errors = validationResult(req); //all the validation results from above is attached to the req object
