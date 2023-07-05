@@ -43,12 +43,31 @@ router.get('/signin', (req, res) => {  //router.get -> get resource from server 
     res.send(signinTemplate())
 })
 
-router.post('/signin', async (req, res) => {
-    const { email, password } = req.body;
-    const user = await usersRepo.getOneBy({ email })    
+router.post('/signin', 
+    [
+        check('email')
+            .trim()
+            .normalizeEmail()
+            .isEmail()
+            .withMessage('Must be a valid email')
+            .custom(async (email) => {
+                const user = await usersRepo.getOneBy({ email })
+                if(!user) {
+                    throw new Error('User not found')
+                }
+            }),
+        check('password')
+            .trim()
+    ], 
+    async (req, res) => {
+        const errors = validationResult(req)
+        console.log(errors)
 
-    if(!user) {
-        return res.send('Email not found')
+        const { email, password } = req.body;
+        const user = await usersRepo.getOneBy({ email })    
+
+        if(!user) {
+            return res.send('Email not found')
     }
 
     const validPassword = await usersRepo.comparePasswords(user.password, password)
