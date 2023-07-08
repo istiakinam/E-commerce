@@ -1,12 +1,5 @@
 import layout from '../layout.js'
-
-const getError = (error, prop) => {
-    try {
-        return error.mapped()[prop].msg
-    } catch (err) {
-        return '';
-    }
-}
+import { getError } from '../../helpers.js'
 
 const signupTemplate = ({ req, errors }) => {
     return layout({ 

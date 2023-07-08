@@ -25,5 +25,33 @@ export const requirePasswordConfirmation = check('passwordConfirmation')
     .custom((passwordConfirmation, { req }) => {
         if(passwordConfirmation !== req.body.password) {
             throw new Error('Passwords do not match')
+        } else {
+            return true;
+        }
+    })
+
+export const checkEmail = check('email')
+    .trim()
+    .normalizeEmail()
+    .isEmail()
+    .withMessage('Must be a valid email')
+    .custom(async (email) => {
+        const user = await usersRepo.getOneBy({ email })
+        if(!user) {
+            throw new Error('User not found')
+        }
+    })
+
+export const checkPassword = check('password')
+    .trim()
+    .custom(async (password, { req }) => {
+        const user = await usersRepo.getOneBy({ email: req.body.email })
+        if(!user) {
+            throw new Error('Invalid password')
+        }
+
+        const validPassword = await usersRepo.comparePasswords(user.password, password)
+        if(!validPassword)  {
+            throw new Error('Invalid password')
         }
     })

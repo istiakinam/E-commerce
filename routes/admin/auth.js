@@ -3,7 +3,12 @@ import express from 'express'
 import { check, validationResult } from 'express-validator'
 import signupTemplate from '../../views/admin/auth/signup.js'
 import signinTemplate from '../../views/admin/auth/signin.js'
-import { requireEmail, requirePassword, requirePasswordConfirmation } from './validators.js'
+import { checkEmail, 
+        checkPassword, 
+        requireEmail, 
+        requirePassword, 
+        requirePasswordConfirmation 
+    } from './validators.js'
 
 const router = express.Router();
 
@@ -40,45 +45,28 @@ router.get('/signout', (req, res) => {
 })
 
 router.get('/signin', (req, res) => {  //router.get -> get resource from server from specified URL
-    res.send(signinTemplate())
+    res.send(signinTemplate({}))
 })
 
 router.post('/signin', 
     [
-        check('email')
-            .trim()
-            .normalizeEmail()
-            .isEmail()
-            .withMessage('Must be a valid email')
-            .custom(async (email) => {
-                const user = await usersRepo.getOneBy({ email })
-                if(!user) {
-                    throw new Error('User not found')
-                }
-            }),
-        check('password')
-            .trim()
+        checkEmail,
+        checkPassword        
     ], 
     async (req, res) => {
         const errors = validationResult(req)
-        console.log(errors)
+        
+        if(!errors.isEmpty()) {
+            return res.send(signinTemplate({ errors }))
+        }
 
-        const { email, password } = req.body;
+        const { email } = req.body;
         const user = await usersRepo.getOneBy({ email })    
 
-        if(!user) {
-            return res.send('Email not found')
+        req.session.userId = user.id
+
+        res.send('You are signed in!')
     }
-
-    const validPassword = await usersRepo.comparePasswords(user.password, password)
-
-    if(!validPassword)  {
-        return res.send('Password does not match')
-    }
-
-    req.session.userId = user.id
-
-    res.send('You are signed in!')
-})
+)
 
 export default router;
