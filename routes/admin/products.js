@@ -1,4 +1,5 @@
 import express from 'express'
+import productsRepo from '../../repositories/products.js'
 
 const router = express.Router()
 

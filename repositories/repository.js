@@ -15,6 +15,13 @@ export class Repository {
         }
     }
 
+    async create(attrs) {
+        attrs.id = this.randomId()
+        const records = await this.getAll()
+        records.push(attrs)
+        return attrs
+    }
+
     async getAll() {
         // return the contents of the file after JSON parsing
         return JSON.parse(
