@@ -1,5 +1,6 @@
 import { check } from 'express-validator'
 import usersRepo from '../../repositories/users.js'
+import ProductsRepository from '../../repositories/products.js'
 
 export const requireEmail = check('email')
     .trim()
@@ -55,3 +56,12 @@ export const checkPassword = check('password')
             throw new Error('Invalid password')
         }
     })
+
+export const requireTitle = check('title')
+    .trim()
+    .isLength({ min: 5, max: 30 })
+
+export const requirePrice = check('price')
+    .trim()
+    .toFloat()
+    .isFloat({ min: 1 })
