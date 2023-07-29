@@ -57,7 +57,6 @@ router.post('/signin',
         const errors = validationResult(req)
         
         if(!errors.isEmpty()) {
-            console.log('mememme')
             return res.send(signinTemplate({ errors }))
         }
 
