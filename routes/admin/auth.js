@@ -1,5 +1,7 @@
-import usersRepo from '../../repositories/users.js';
 import express from 'express'
+
+import { handleErrors } from './middlewares.js';
+import usersRepo from '../../repositories/users.js';
 import { check, validationResult } from 'express-validator'
 import signupTemplate from '../../views/admin/auth/signup.js'
 import signinTemplate from '../../views/admin/auth/signin.js'
@@ -16,19 +18,12 @@ router.get('/signup', (req, res) /*middleware function*/ => {
     res.send(signupTemplate({ req }));
 })
 
-router.post('/signup', 
-    [
-        requireEmail,
-        requirePassword,
-        requirePasswordConfirmation
-    ],
+router.post(
+    '/signup', 
+    [requireEmail, requirePassword, requirePasswordConfirmation],
+    handleErrors(signupTemplate),
     async (req, res) => {
-        const errors = validationResult(req); //all the validation results from above is attached to the req object
-        if(!errors.isEmpty()) {
-            return res.send(signupTemplate({ req, errors }))
-        }
-
-        const { email, password, passwordConfirmation } = req.body;
+        const { email, password } = req.body;
 
         //create user inside user repo
         const user = await usersRepo.create({ email, password });
@@ -53,13 +48,8 @@ router.post('/signin',
         checkEmail,
         checkPassword        
     ], 
+    handleErrors(signinTemplate),
     async (req, res) => {
-        const errors = validationResult(req)
-        
-        if(!errors.isEmpty()) {
-            return res.send(signinTemplate({ errors }))
-        }
-
         const { email } = req.body;
         const user = await usersRepo.getOneBy({ email })    
 
