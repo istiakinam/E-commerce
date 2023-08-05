@@ -29,7 +29,7 @@ router.post(                    //ordering of middleware is important
         const { title, price } = req.body
         await productsRepo.create({ title, price, image })
 
-        res.send('Submitted')   
+        res.redirect('/admin/products')   
 })
 
 export default router
