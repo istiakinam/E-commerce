@@ -11,3 +11,11 @@ export const handleErrors = (templateFunc) => {
         next()
     }   
 }
+
+export const requireAuth = (req, res, next) => {
+    if(!req.session.userId) {
+        return res.redirect('/signin')
+    }
+
+    next()
+}
