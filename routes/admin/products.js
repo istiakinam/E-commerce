@@ -4,6 +4,7 @@ import multer from 'multer'
 import { handleErrors, requireAuth } from './middlewares.js'
 import productsRepo from '../../repositories/products.js'
 import productsNewTemplate from '../../views/admin/products/new.js'
+import productsEditTemplate from '../../views/admin/products/edit.js'
 import { productsIndexTemplate } from '../../views/admin/products/index.js'
 import { requireTitle, requirePrice } from './validators.js'
 
@@ -17,7 +18,6 @@ router.get('/admin/products', requireAuth, async (req, res) => {
 })
 
 router.get('/admin/products/new', requireAuth, (req, res) => {
-    
     res.send(productsNewTemplate({}))
 })
 
@@ -33,6 +33,20 @@ router.post(                    //ordering of middleware is important
         await productsRepo.create({ title, price, image })
 
         res.redirect('/admin/products')   
+})
+
+router.get('/admin/products/:id/edit', requireAuth, async (req, res) => {
+    const product = await productsRepo.getOne(req.params.id)
+
+    if(!product) {
+        return res.send('Product not found!')
+    }
+
+    res.send(productsEditTemplate({ product }))
+})
+
+router.post('/admin/products/:id/edit', requireAuth, async (req, res) => {
+    
 })
 
 export default router
