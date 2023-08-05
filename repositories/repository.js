@@ -16,10 +16,16 @@ export class Repository {
     }
 
     async create(attrs) {
-        attrs.id = this.randomId()
-        const records = await this.getAll()
-        records.push(attrs)
-        return attrs
+        try {
+            attrs.id = this.randomId()
+            const records = await this.getAll()
+            records.push(attrs)
+            await this.writeAll(records)
+            return attrs
+        } catch (error) {
+            console.error("Error creating product:", error)
+            return null
+        }
     }
 
     async getAll() {
@@ -33,7 +39,11 @@ export class Repository {
 
     async writeAll(records) {
         //write the updated 'records' array back to the this.filename
-        await fs.promises.writeFile(this.filename, JSON.stringify(records, null, 2))
+        try {
+            await fs.promises.writeFile(this.filename, JSON.stringify(records, null, 2))
+        } catch (error) {
+            console.error("Error writing to file:", error)
+        }
     }
 
     randomId() {
