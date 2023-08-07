@@ -72,8 +72,16 @@ router.post(
         } 
 
         res.redirect('/admin/products')
-        
 })
+
+router.post(                      //watching for a POST request
+    '/admin/products/:id/delete', 
+    requireAuth, 
+    async (req, res) => {
+        await productsRepo.delete(req.params.id)
+        res.redirect('/admin/products')
+    }
+) 
 
 export default router
 

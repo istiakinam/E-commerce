@@ -1,10 +1,10 @@
-import layout from "../layout.js";
-import { getError } from "../../helpers.js";
+const layout = require('../layout');
+const { getError } = require('../../helpers');
 
-const productsEditTemplate = ({ product, errors }) => {
-    return layout ({
-        content: `
-        <div class="columns is-centered">
+module.exports = ({ product, errors }) => {
+  return layout({
+    content: `
+      <div class="columns is-centered">
         <div class="column is-half">
           <h1 class="subtitle">Edit a Product</h1>
 
@@ -34,8 +34,6 @@ const productsEditTemplate = ({ product, errors }) => {
           </form>
         </div>
       </div>
-        `
-    })
-}
-
-export default productsEditTemplate
+    `
+  });
+};
