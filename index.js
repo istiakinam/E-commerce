@@ -2,7 +2,8 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cookieSession from 'cookie-session';
 import authRouter from './routes/admin/auth.js'
-import productsRouter from './routes/admin/products.js'
+import productsRouter from './routes/products.js'
+import adminProductsRouter from './routes/admin/products.js'
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(cookieSession({
 }));
 app.use(authRouter);
 app.use(productsRouter);
+app.use(adminProductsRouter);
 
 const port = 3000;
 
