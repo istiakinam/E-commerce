@@ -1,14 +1,9 @@
-import layout from '../layout.js'
+const layout = require('../layout');
 
-const cartShowTemplate = ({ items }) => {
-    let totalPrice = 0
-    for(let item of items) {
-        totalPrice += item.quantity * item.product.price
-    }
-    
-
-    const renderedItems = items.map(item => {
-        return `
+module.exports = ({ items }) => {
+  const renderedItems = items
+    .map(item => {
+      return `
         <div class="cart-item message">
           <h3 class="subtitle">${item.product.title}</h3>
           <div class="cart-right">
@@ -47,15 +42,13 @@ const cartShowTemplate = ({ items }) => {
               <div class="message-header">
                 Total
               </div>
-              <h1 class="title">$${totalPrice}</h1>
+              <h1 class="title">$</h1>
               <button class="button is-primary">Buy</button>
             </div>
           </div>
           <div class="column"></div>
         </div>
       </div>
-      `
-    })
-}
-
-export default cartShowTemplate
+    `
+  });
+};
